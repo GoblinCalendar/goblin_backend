@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "44867504329",
+    "project_id": "goblin-app-6aa57",
+    "storage_bucket": "goblin-app-6aa57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44867504329:android:d3c2a395c437860944a518",
+        "android_client_info": {
+          "package_name": "goblin.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtceKuXuxveFoCngWZcVoVFcP83GKVTEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
