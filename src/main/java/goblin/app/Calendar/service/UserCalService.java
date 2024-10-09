@@ -17,6 +17,8 @@ import goblin.app.Calendar.model.entity.UserCalRepository;
 import goblin.app.Calendar.model.entity.UserCalendar;
 import goblin.app.Common.exception.CustomException;
 import goblin.app.Common.exception.ErrorCode;
+import goblin.app.Group.model.dto.GroupHelper;
+import goblin.app.Group.model.entity.Group;
 import goblin.app.User.model.entity.User;
 
 @Service
@@ -25,13 +27,18 @@ import goblin.app.User.model.entity.User;
 public class UserCalService {
 
   private final UserCalRepository userCalRepository;
+  private final GroupHelper groupHelper;
 
   // 일반 스케쥴 등록
   @Transactional
   public uCalResponseDto save(uCalSaveRequestDto requestDto, User currentUser) {
+    // "개인" 그룹을 조회하거나 생성
+    Group personalGroup = groupHelper.getOrCreatePersonalGroup(currentUser);
+
     LocalDateTime startTime = requestDto.getStartTime(); // 변환된 startTime
     LocalDateTime endTime = requestDto.getEndTime(); // 변환된 endTime
 
+    // 개인 일정을 개인 그룹과 연동하여 생성
     UserCalendar userCalendar =
         UserCalendar.builder()
             .title(requestDto.getTitle())
@@ -39,6 +46,7 @@ public class UserCalService {
             .user(currentUser)
             .startTime(startTime)
             .endTime(endTime)
+            .group(personalGroup) // 그룹에 "개인" 그룹 추가
             .build();
 
     userCalRepository.save(userCalendar);
@@ -85,47 +93,28 @@ public class UserCalService {
   // 개인 스케줄 월별 조회 (3개까지만 조회)
   @Transactional
   public List<uCalResponseDto> viewByMonth(int year, int month, User user) {
-    int[] yearMonth = validateYearAndMonth(year, month);
-    List<UserCalendar> scheduleList =
-        userCalRepository.findByYearAndMonth(yearMonth[0], yearMonth[1], user);
+    // "개인" 그룹을 조회
+    Group personalGroup = groupHelper.getOrCreatePersonalGroup(user);
 
-    return scheduleList.stream().limit(3).map(uCalResponseDto::new).collect(Collectors.toList());
+    // 개인 그룹에 속한 일정 조회
+    List<UserCalendar> scheduleList =
+        userCalRepository.findByYearAndMonthAndGroup(year, month, user, personalGroup);
+
+    return scheduleList.stream().map(uCalResponseDto::new).collect(Collectors.toList());
   }
 
   // 개인 스케줄 일별 조회
   @Transactional
   public List<uCalResponseDto> viewByDay(int year, int month, int day, User user) {
-    int[] yearMonth = validateYearAndMonth(year, month);
+    // "개인" 그룹을 조회
+    Group personalGroup = groupHelper.getOrCreatePersonalGroup(user);
+
+    // 개인 그룹에 속한 일정 조회
     List<UserCalendar> scheduleList =
-        userCalRepository.findByDay(yearMonth[0], yearMonth[1], day, user);
+        userCalRepository.findByDayAndGroup(year, month, day, user, personalGroup);
 
     return scheduleList.stream().map(uCalResponseDto::new).collect(Collectors.toList());
   }
-
-  // 고정 스케줄 메모 등록 (추가)
-  /*
-  @Transactional
-  public void addMemo(Long scheduleId, String memo, User currentUser) {
-      UserCalendar userCalendar = userCalRepository.findById(scheduleId)
-              .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND));
-
-      validateUser(userCalendar, currentUser);
-      userCalendar.addMemo(memo); // 메모 추가
-  }
-   */
-
-  //  // 카테고리별 스케줄 조회
-  //  @Transactional
-  //  public List<uCalResponseDto> viewByCategory(Long categoryId, User currentUser) {
-  //    Category category =
-  //        categoryRepository
-  //            .findById(categoryId)
-  //            .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-  //
-  //    List<UserCalendar> scheduleList =
-  //        userCalRepository.findByCategoryAndUser(category, currentUser);
-  //    return scheduleList.stream().map(uCalResponseDto::new).collect(Collectors.toList());
-  //  }
 
   // 개인 스케줄 검색 기능
   @Transactional

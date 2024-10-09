@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import goblin.app.Calendar.model.dto.request.uCalSaveRequestDto;
 import goblin.app.Calendar.model.dto.response.uCalResponseDto;
 import goblin.app.Calendar.service.UserCalService;
+import goblin.app.FixedSchedule.service.FixedScheduleService;
 import goblin.app.User.model.entity.User;
 import goblin.app.User.repository.UserRepository;
 import goblin.app.User.util.JwtUtil;
@@ -31,8 +32,8 @@ public class UserCalController {
 
   @Autowired private final UserCalService userCalService;
   @Autowired private final JwtUtil jwtUtil;
-
   @Autowired private final UserRepository userRepository;
+  @Autowired private final FixedScheduleService fixedScheduleService;
 
   // 일반 스케쥴 등록
   @Operation(summary = "일반 일정 등록", description = "사용자의 새로운 일정을 캘린더에 저장")

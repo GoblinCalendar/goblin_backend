@@ -109,6 +109,57 @@ public class FixedScheduleController {
     }
   }
 
+  @GetMapping("/group/{groupId}")
+  @Operation(summary = "그룹별 고정 일정 조회", description = "해당 그룹의 고정 일정을 조회")
+  public ResponseEntity<List<FixedScheduleResponseDTO>> getSchedulesByGroup(
+      @PathVariable Long groupId,
+      @RequestHeader(value = "Authorization", required = true) String bearerToken) {
+
+    String loginId = extractLoginId(bearerToken);
+    List<FixedScheduleResponseDTO> schedules =
+        fixedScheduleService.getSchedulesByGroup(groupId, loginId);
+    return ResponseEntity.ok(schedules);
+  }
+
+  @PutMapping("/{scheduleId}/group/{groupId}/toggle-public")
+  @Operation(summary = "고정 일정 공개 여부 변경", description = "그룹 내 고정 일정의 공개 여부를 전환")
+  public ResponseEntity<String> togglePublicStatus(
+      @PathVariable Long scheduleId,
+      @PathVariable Long groupId,
+      @RequestHeader(value = "Authorization", required = true) String bearerToken) {
+
+    String loginId = extractLoginId(bearerToken);
+    fixedScheduleService.togglePublicStatus(scheduleId, groupId, loginId);
+    return ResponseEntity.ok("공개 여부가 전환되었습니다.");
+  }
+
+  //  @GetMapping("/personal/month")
+  //  @Operation(summary = "개인 고정 일정 월별 조회", description = "사용자의 개인 고정 일정을 월별로 조회")
+  //  public ResponseEntity<List<FixedScheduleResponseDTO>> getPersonalFixedSchedulesByMonth(
+  //      @RequestParam int year,
+  //      @RequestParam int month,
+  //      @RequestHeader(value = "Authorization", required = true) String bearerToken) {
+  //
+  //    User user = getUserFromToken(bearerToken);
+  //    List<FixedScheduleResponseDTO> schedules =
+  //        fixedScheduleService.getPersonalFixedSchedulesByMonth(year, month, user);
+  //    return ResponseEntity.ok(schedules);
+  //  }
+  //
+  //  @GetMapping("/personal/day")
+  //  @Operation(summary = "개인 고정 일정 일별 조회", description = "사용자의 개인 고정 일정을 일별로 조회")
+  //  public ResponseEntity<List<FixedScheduleResponseDTO>> getPersonalFixedSchedulesByDay(
+  //      @RequestParam int year,
+  //      @RequestParam int month,
+  //      @RequestParam int day,
+  //      @RequestHeader(value = "Authorization", required = true) String bearerToken) {
+  //
+  //    User user = getUserFromToken(bearerToken);
+  //    List<FixedScheduleResponseDTO> schedules =
+  //        fixedScheduleService.getPersonalFixedSchedulesByDay(year, month, day, user);
+  //    return ResponseEntity.ok(schedules);
+  //  }
+
   // JWT 토큰에서 User 객체 추출하는 메서드
   private User getUserFromToken(String bearerToken) {
     if (bearerToken != null && bearerToken.startsWith("Bearer ")) {

@@ -13,6 +13,7 @@ public class uCalResponseDto {
   Long id;
   String title;
   String note;
+  String color;
 
   LocalDateTime startTime;
   LocalDateTime endTime;
@@ -24,5 +25,6 @@ public class uCalResponseDto {
     this.note = entity.getNote();
     this.startTime = entity.getStartTime();
     this.endTime = entity.getEndTime();
+    this.color = entity.getColor();
   }
 }

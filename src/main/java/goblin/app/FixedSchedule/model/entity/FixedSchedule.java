@@ -4,10 +4,15 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import jakarta.persistence.*;
 
+import goblin.app.Group.model.entity.Group;
 import goblin.app.User.model.entity.User;
 
 @Entity
@@ -26,6 +31,10 @@ public class FixedSchedule {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
+
+  @ManyToOne(fetch = FetchType.LAZY) // 그룹과의 관계 설정
+  @JoinColumn(name = "group_id")
+  private Group group; // 추가된 그룹 필드
 
   @Column(nullable = false, length = 13)
   private String scheduleName;
@@ -46,7 +55,7 @@ public class FixedSchedule {
   private String color;
 
   @Column(name = "is_public")
-  private boolean isPublic; // boolean 타입의 필드
+  private boolean isPublic;
 
   public void updateTime(LocalTime startTime, LocalTime endTime) {
     this.startTime = startTime;

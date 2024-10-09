@@ -20,6 +20,7 @@ public class FixedScheduleResponseDTO {
   private List<String> dayOfWeek;
   private boolean isPublic;
   private String color;
+  private Long groupId; // 그룹 ID 추가
 
   public FixedScheduleResponseDTO(FixedSchedule schedule) {
     this.id = schedule.getId();
@@ -30,5 +31,6 @@ public class FixedScheduleResponseDTO {
         schedule.getDayOfWeek().stream().map(DayOfWeek::name).collect(Collectors.toList());
     this.isPublic = schedule.isPublic();
     this.color = schedule.getColor();
+    this.groupId = schedule.getGroup().getGroupId(); // 그룹 ID 설정
   }
 }

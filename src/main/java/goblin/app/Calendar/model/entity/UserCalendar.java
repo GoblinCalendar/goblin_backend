@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import goblin.app.Common.config.BooleanToYNConverter;
+import goblin.app.Group.model.entity.Group;
 import goblin.app.User.model.entity.User;
 
 @Entity
@@ -28,6 +29,10 @@ public class UserCalendar {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
+
+  @ManyToOne(fetch = FetchType.LAZY) // 그룹과 연동
+  @JoinColumn(name = "group_id")
+  private Group group; // 개인 그룹 추가
 
   @Column(nullable = false)
   private String title;
@@ -53,12 +58,18 @@ public class UserCalendar {
 
   @Builder
   public UserCalendar(
-      User user, String title, String note, LocalDateTime startTime, LocalDateTime endTime) {
+      User user,
+      String title,
+      String note,
+      LocalDateTime startTime,
+      LocalDateTime endTime,
+      Group group) {
     this.user = user;
     this.title = title;
     this.note = note;
     this.startTime = startTime;
     this.endTime = endTime;
+    this.group = group; // 그룹 필드 추가
     this.color = "CCD7E5";
   }
 
